@@ -50,7 +50,6 @@ class Star:
         self.ext_msg: Dict[str, List[str]] = {}
         for key in rc:
             code = rc[key]
-            print(1000, code)
             self.ext_msg[code] = []
             if code == result_code.START:
                 self.ext_msg[code].append('[*] Start to detect {call} for {target}.')
@@ -71,7 +70,6 @@ class Star:
                 self.ext_msg[code].append('[!] Target {target} connection error!')
             if code == result_code.FINISH:
                 self.ext_msg[code].append('---------------- Heartless Split Line ----------------')
-            print(1000, self.ext_msg)
 
     def light_and_msg(self, dip, dport, *arg, **kwargs):
         self.msg(f'{dip}:{dport}', result_code.START)
