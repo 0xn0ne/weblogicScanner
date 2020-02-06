@@ -23,8 +23,10 @@ class ResultCode(BaseState):
     EXISTS = 20
     # not exists anything
     NOTEXISTS = 40
-    # not exists anything
+    # timeout
     TIMEOUT = 50
+    # error
+    ERROR = 60
     # detect finish
     FINISH = 100
 
@@ -48,6 +50,7 @@ class Star:
         self.ext_msg: Dict[str, List[str]] = {}
         for key in rc:
             code = rc[key]
+            print(1000, code)
             self.ext_msg[code] = []
             if code == result_code.START:
                 self.ext_msg[code].append('[*] Start to detect {call} for {target}.')
@@ -64,12 +67,20 @@ class Star:
                     self.ext_msg[code].append('[*] Please verify {call} vulnerability manually!')
             if code == result_code.TIMEOUT:
                 self.ext_msg[code].append('[!] Target {target} detect timeout!')
+            if code == result_code.ERROR:
+                self.ext_msg[code].append('[!] Target {target} connection error!')
             if code == result_code.FINISH:
                 self.ext_msg[code].append('---------------- Heartless Split Line ----------------')
+            print(1000, self.ext_msg)
 
     def light_and_msg(self, dip, dport, *arg, **kwargs):
         self.msg(f'{dip}:{dport}', result_code.START)
-        res, data = self.light_up(dip, dport, *arg, **kwargs)
+        res = False
+        data = {}
+        try:
+            res, data = self.light_up(dip, dport, *arg, **kwargs)
+        except ConnectionAbortedError:
+            self.msg(f'{dip}:{dport}', result_code.ERROR)
         if res:
             self.msg(f'{dip}:{dport}', result_code.EXISTS)
         else:
