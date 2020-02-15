@@ -3544,7 +3544,7 @@ class CVE_2019_2729(Star):
         'CVE': 'CVE-2019-2729',
         'TAG': []
     }
-    type = target_type.MODULE
+    type = target_type.VULNERABILITY
 
     def light_up(self, dip, dport, *args, **kwargs) -> (bool, dict):
         result1, data = http(urljoin(f'http://{dip}:{dport}', path1), 'POST', headers, data=payload1, timeout=3)

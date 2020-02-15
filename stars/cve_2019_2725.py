@@ -110,7 +110,7 @@ class CVE_2019_2725(Star):
         'CVE': 'CVE-2018-2725',
         'TAG': []
     }
-    type = target_type.MODULE
+    type = target_type.VULNERABILITY
 
     def light_up(self, dip, dport, *args, **kwargs) -> (bool, dict):
         resp = weblogic_10_3_6('http://{}:{}'.format(dip, dport))
