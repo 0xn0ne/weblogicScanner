@@ -4,11 +4,7 @@
 # updated 2019/10/23
 # by 0xn0ne
 
-import sys
-import re
 from urllib.parse import urljoin
-
-import requests
 
 from stars import universe, Star, target_type
 from utils import http

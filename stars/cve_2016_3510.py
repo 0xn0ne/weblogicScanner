@@ -6,7 +6,6 @@
 # by 0xn0ne
 
 import socket
-import sys
 import time
 
 from stars import universe, Star, target_type

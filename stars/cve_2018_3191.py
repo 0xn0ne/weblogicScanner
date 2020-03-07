@@ -7,7 +7,6 @@
 
 import socket
 import struct
-import sys
 import time
 
 from stars import universe, Star, target_type

@@ -1,16 +1,16 @@
-源工具链接：https://github.com/rabbitmask/WeblogicScan
+source: https://github.com/rabbitmask/WeblogicScan
 
 # weblogicScaner
 
-简体中文 | [English](./README_EN.md)
+[简体中文](./README.md) | English
 
-截至 2020 年 3 月 7 日，weblogic 漏洞扫描工具。若存在未记录且已公开 POC 的漏洞，欢迎提交 issue。
+As of March 7, 2020, weblogic Vulnerability Scanning Tool. If there is an unrecorded and open POC vulnerability, please submit issue.
 
-原作者已经收集得比较完整了，在这里做了部分的 bug 修复，部分脚本 POC 未生效，配置错误等问题。之前查了一下发现部分 POC 无法使用。在这个项目里面对脚本做了一些修改，提高准确率。
+Some bug fixes were made, some POC did not take effect, or configuration errors. I checked before and found that some POC could not be used. In this project, some modifications have been made to the script to improve the accuracy.
 
-**注意**：部分漏洞由于稳定性原因需要多次测试才可验证
+**Note**：Some vulnerabilities require multiple tests to verify due to stability reasons.
 
-目前可检测漏洞编号有（部分非原理检测，需手动验证）：
+Currently detectable vulnerabilitys are (some non-principles detection, manual verification required):
 
 + weblogic administrator console
 + CVE-2014-4210
@@ -31,36 +31,37 @@
 + CVE-2019-2890
 + CVE-2020-2551
 
-# 快速开始
+# Quick start
 
-### 依赖
+### Required
 
 + python >= 3.6
 
-进入项目目录，使用以下命令安装依赖库
+In the project directory and use the following command to install the dependent libraries
 
 ```
 $ pip3 install requests
 ```
 
-### 使用说明
+### Usage
 
 ```
-usage: ws.py [-h] -t TARGETS [TARGETS ...] -v VULNERABILITY
-             [VULNERABILITY ...] [-o OUTPUT]
+usage: ws.py [-h] -t TARGETS [TARGETS ...]
+             [-v VULNERABILITY [VULNERABILITY ...]] [-o OUTPUT]
 
 optional arguments:
-  -h, --help            帮助信息
+  -h, --help            show this help message and exit
   -t TARGETS [TARGETS ...], --targets TARGETS [TARGETS ...]
-                        直接填入目标或文件列表（默认使用端口7001）. 例子：
+                        target, or targets file(default port 7001). eg.
                         127.0.0.1:7001
   -v VULNERABILITY [VULNERABILITY ...], --vulnerability VULNERABILITY [VULNERABILITY ...]
-                        漏洞名称或CVE编号，例子："weblogic administrator console"
+                        vulnerability name. eg. "weblogic administrator
+                        console"
   -o OUTPUT, --output OUTPUT
-                        输出 json 结果的路径。默认不输出结果
+                        Path to json output(default without output).
 ```
 
-# 结果样例
+# Example
 
 ```
 (venv) ~/weblogicScanner$ python ws.py -t 192.168.124.129

@@ -17,7 +17,6 @@ from stars import universe, Star, target_type
 from utils import http
 
 
-
 @universe.groups()
 class CVE_2014_4210(Star):
     info = {
@@ -32,5 +31,3 @@ class CVE_2014_4210(Star):
         if r and r.status_code == 200:
             return True, {'url': r.url}
         return False, {}
-
-

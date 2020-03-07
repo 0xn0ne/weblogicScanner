@@ -52,7 +52,7 @@ class Star:
             code = rc[key]
             self.ext_msg[code] = []
             if code == result_code.START:
-                self.ext_msg[code].append('[*] Start to detect {call} for {target}.')
+                self.ext_msg[code].append('[*] Start detect {call} for {target}.')
             if code == result_code.NOTEXISTS:
                 if self.type == target_type.VULNERABILITY:
                     self.ext_msg[code].append('[-] Target {target} does not detect {call} vulnerability!')

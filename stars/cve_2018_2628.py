@@ -4,9 +4,9 @@
 # 该漏洞不会直接回显
 # updated 2019/11/1
 # by 0xn0ne
+
 import re
 import socket
-import sys
 import time
 
 from stars import universe, Star, target_type

@@ -5,8 +5,6 @@
 # updated 2019/10/30
 # by 0xn0ne
 
-import sys
-
 from stars import universe, Star, target_type
 from utils import http
 

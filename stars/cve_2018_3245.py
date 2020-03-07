@@ -4,6 +4,7 @@
 # 这个漏洞超时次数会比较多，非常不稳定，建议多做尝试。最多一次尝试了 24 次
 # updated 2019/12/05
 # by 0xn0ne
+
 import socket
 import struct
 import time
