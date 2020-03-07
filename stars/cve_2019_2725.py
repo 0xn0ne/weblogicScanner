@@ -103,7 +103,7 @@ def weblogic_12_1_3(target, cmd='whoami'):
 class CVE_2019_2725(Star):
     info = {
         'NAME': '',
-        'CVE': 'CVE-2018-2725',
+        'CVE': 'CVE-2019-2725',
         'TAG': []
     }
     type = target_type.VULNERABILITY
