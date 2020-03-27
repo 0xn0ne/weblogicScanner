@@ -34,13 +34,13 @@ if __name__ == '__main__':
         if os.path.isfile(target):
             with open(target) as _f:
                 for it in _f.read().split('\n'):
-                    res = re.search(r'^(\d{,3}\.\d{,3}\.\d{,3}\.\d{,3})([ :](\d{,5}))?$', it)
+                    res = re.search(r'^([\w.\-]{,80})([ :](\d{,5}))?$', it)
                     if res:
                         port = res.group(3) if res.group(3) else '7001'
                         id = res.group(1) + ':' + port
                         m_target[id] = {'ip': res.group(1), 'port': port}
         else:
-            res = re.search(r'^(\d{,3}\.\d{,3}\.\d{,3}\.\d{,3})([ :](\d{,5}))?$', target)
+            res = re.search(r'^([\w.\-]{,80})([ :](\d{,5}))?$', target)
             if res:
                 port = res.group(3) if res.group(3) else '7001'
                 id = res.group(1) + ':' + port
