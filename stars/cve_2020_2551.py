@@ -17,7 +17,7 @@ class CVE_2020_2551(Star):
         'CVE': 'CVE-2020-2551',
         'TAG': []
     }
-    type = target_type.VULNERABILITY
+    type = target_type.MODULE
 
     def light_up(self, dip, dport, timeout=5, *args, **kwargs) -> (bool, dict):
         # t3 handshake
