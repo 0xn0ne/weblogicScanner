@@ -50,15 +50,12 @@ if __name__ == '__main__':
         for group_name in stars.universe.actived:
             for star in stars.universe.actived[group_name]:
                 instance = star()
-                try:
-                    if vulnerability_list and ((instance.info['CVE'] and instance.info['CVE'].lower() not in vulnerability_list) or (
-                            instance.info['NAME'] and instance.info['NAME'].lower() not in vulnerability_list)):
-                        continue
-                    res, msg = instance.light_and_msg(m_target[key]['ip'], m_target[key]['port'])
-                    ikey = instance.info['CVE'] if instance.info['CVE'] else instance.info['NAME']
-                    m_target[key][ikey] = res
-                except Exception as e:
-                    instance.msg(m_target[key]['ip'], e)
+                if vulnerability_list and ((instance.info['CVE'] and instance.info['CVE'].lower() not in vulnerability_list) or (
+                        instance.info['NAME'] and instance.info['NAME'].lower() not in vulnerability_list)):
+                    continue
+                res, msg = instance.light_and_msg(m_target[key]['ip'], m_target[key]['port'])
+                ikey = instance.info['CVE'] if instance.info['CVE'] else instance.info['NAME']
+                m_target[key][ikey] = res
 
     if args.output:
         with open(os.path.join(args.output, f'res_{time.strftime("%Y%m%d_%H.%M.%S", time.localtime(time.time()))}.json'), 'w') as _f:
