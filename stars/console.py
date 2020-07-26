@@ -15,7 +15,7 @@ headers = {'User-Agent': 'TestUA/1.0'}
 @universe.groups()
 class WeblogicConsole(Star):
     info = {
-        'NAME': 'weblogic administrator console',
+        'NAME': 'Weblogic Console',
         'CVE': None,
         'TAG': []
     }
