@@ -79,7 +79,7 @@ class R(BaseState):
         WS_DONE: 'Websocket 请求完成'
     }
 
-    _lang_cn = {
+    _lang_en = {
         SUCCESS: 'success',
         FAILED: 'failed',
         TIMEOUT: 'timeout',
