@@ -26,8 +26,8 @@ class CVE_2014_4210(Star):
     }
     type = target_type.MODULE
 
-    def light_up(self, dip, dport, *args, **kwargs) -> (bool, dict):
-        r, data = http('http://{}:{}/uddiexplorer/SearchPublicRegistries.jsp'.format(dip, dport))
+    def light_up(self, dip, dport, force_ssl=None, *args, **kwargs) -> (bool, dict):
+        r, data = http('http://{}:{}/uddiexplorer/SearchPublicRegistries.jsp'.format(dip, dport), ssl=force_ssl)
         if r and r.status_code == 200:
             return True, {'url': r.url}
         return False, {}

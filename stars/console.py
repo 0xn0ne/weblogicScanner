@@ -21,8 +21,8 @@ class WeblogicConsole(Star):
     }
     type = target_type.MODULE
 
-    def light_up(self, dip, dport, path='console', *args, **kwargs) -> (bool, dict):
-        r, data = http('http://{}:{}/{}/login/LoginForm.jsp'.format(dip, dport, path))
+    def light_up(self, dip, dport, force_ssl=None, path='console', *args, **kwargs) -> (bool, dict):
+        r, data = http('http://{}:{}/{}/login/LoginForm.jsp'.format(dip, dport, path), ssl=force_ssl)
         if r and r.status_code == 200:
             return True, {'url': r.url}
         return False, {}

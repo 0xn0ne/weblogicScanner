@@ -74,25 +74,25 @@ class Star:
             if code == result_code.ERROR:
                 self.msg_group[code].append('[!][{call}][{target}] Connection error.')
 
-    def light_and_msg(self, dip, dport, *arg, **kwargs):
+    def light_and_msg(self, dip, dport, force_ssl=None, *arg, **kwargs):
         self.print_msg(f'{dip}:{dport}', result_code.START)
         res = False
         data = {}
         try:
-            res, data = self.light_up(dip, dport, *arg, **kwargs)
+            res, data = self.light_up(dip, dport, force_ssl, *arg, **kwargs)
         except Exception as e:
             # ConnectionResetError: 当 socket 连接被重置触发，常见于反序列化的场景
             # ConnectionAbortedError: 当 socket 连接被强制中断触发，常见于存在防火墙的场景
             self.print_msg(f'{dip}:{dport}', result_code.ERROR, {
                 'more_detail': ['''The following information output is only used for error tracking, so don't panic''',
-                                '以下信息输出仅为错误追踪使用，请勿担心',traceback.format_exc()]}, level=logging.DEBUG)
+                                '以下信息输出仅为错误追踪使用，请勿担心', traceback.format_exc()]}, level=logging.DEBUG)
         if res:
             self.print_msg(f'{dip}:{dport}', result_code.EXISTS)
         else:
             self.print_msg(f'{dip}:{dport}', result_code.NOTEXISTS)
         return res, data
 
-    def light_up(self, dip, dport, *arg, **kwargs) -> Tuple[Union[bool, None], dict]:
+    def light_up(self, dip, dport, force_ssl=None, *arg, **kwargs) -> Tuple[Union[bool, None], dict]:
         self.print_msg(f'{dip}:{dport}', result_code.START)
         return None, {}
 

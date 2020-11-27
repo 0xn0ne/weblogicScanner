@@ -17,10 +17,13 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--vulnerability', nargs='+',
                         help='vulnerability name. eg. "weblogic administrator console"')
     parser.add_argument('-o', '--output', type=str, help='Path to json output(default without output).')
+    parser.add_argument('-s', '--ssl', action='store_true', help='Forcing the use of the https protocol.')
     args = parser.parse_args()
 
     if args.output and not os.path.isdir(args.output):
         os.makedirs(args.output)
+    if not args.ssl:
+        args.ssl = None
 
     vulnerability_list = []
     if args.vulnerability:
@@ -50,13 +53,16 @@ if __name__ == '__main__':
         for group_name in stars.universe.actived:
             for star in stars.universe.actived[group_name]:
                 instance = star()
-                if vulnerability_list and ((instance.info['CVE'] and instance.info['CVE'].lower() not in vulnerability_list) or (
-                        instance.info['NAME'] and instance.info['NAME'].lower() not in vulnerability_list)):
+                if vulnerability_list and not (
+                        (instance.info['CVE'] and instance.info['CVE'].lower() in vulnerability_list) or (
+                        instance.info['NAME'] and instance.info['NAME'].lower() in vulnerability_list)):
                     continue
-                res, msg = instance.light_and_msg(m_target[key]['ip'], m_target[key]['port'])
+                res, msg = instance.light_and_msg(m_target[key]['ip'], m_target[key]['port'], args.ssl)
                 ikey = instance.info['CVE'] if instance.info['CVE'] else instance.info['NAME']
                 m_target[key][ikey] = res
 
     if args.output:
-        with open(os.path.join(args.output, f'res_{time.strftime("%Y%m%d_%H.%M.%S", time.localtime(time.time()))}.json'), 'w') as _f:
+        with open(
+                os.path.join(args.output, f'res_{time.strftime("%Y%m%d_%H.%M.%S", time.localtime(time.time()))}.json'),
+                'w') as _f:
             _f.write(json.dumps(m_target))

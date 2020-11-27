@@ -60,7 +60,7 @@ class Url:
         else:
             self.params = DictString()
 
-        r = re.findall(r'[?&]([^;?#]+?)=([^;?#&]+)', url)
+        r = re.findall(r'[?&]([^;?#]+?)=([^?#&]*)', url)
         if r:
             self.query = DictString(r)
         else:
@@ -106,20 +106,28 @@ class Url:
         return f"URL(scheme={self.scheme}, netloc={self.netloc}, path={self.path}, params={self.params}, query={self.query}, fragment={self.fragment}, hostname={self.hostname}, port={self.port}, username={self.username}, password={self.password})"
 
 
-def http(url, method='GET', headers=None, params=None, data=None, timeout=10, verify=True) -> (Tuple[requests.Response, None], Dict):
+def http(url, method='GET', headers=None, params=None, data=None, verify=False, timeout=10, ssl=None, session=None) -> (
+        Tuple[requests.Response, None], Dict):
     if not headers:
         headers = {}
     headers.update({'User-Agent': 'TestUA/1.0'})
     nurl = Url(url)
+    if session == False:
+        session = requests
+    if not session:
+        session = requests.session()
     try:
+        if ssl:
+            raise requests.exceptions.SSLError('force ssl')
         nurl.scheme = 'http'
-        return requests.request(method, nurl.url_full(), headers=headers, params=params, data=data, timeout=timeout,
-                                verify=verify), {'code': 0, 'message': 'request success'}
-    except requests.exceptions.RequestException:
+        return session.request(method, nurl.url_full(), headers=headers, params=params, data=data, timeout=timeout,
+                               verify=verify), {'code': 0, 'message': 'request success'}
+    except requests.exceptions.RequestException as e:
+        if ssl == False:
+            return None, {'code': -10, 'message': e.__str__()}
         try:
             nurl.scheme = 'https'
-            return requests.request(method, nurl.url_full(), headers=headers, params=params, data=data, timeout=timeout,
-                                    verify=verify),{'code': 0, 'message': 'request success'}
+            return session.request(method, nurl.url_full(), headers=headers, params=params, data=data, timeout=timeout,
+                                   verify=verify), {'code': 0, 'message': 'request success'}
         except requests.exceptions.RequestException as e:
             return None, {'code': -10, 'message': e.__str__()}
-

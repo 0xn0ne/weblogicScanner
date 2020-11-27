@@ -20,7 +20,7 @@ class CVE_2020_2555(Star):
     }
     type = target_type.VULNERABILITY
 
-    def light_up(self, dip, dport, delay=2, timeout=5, cmd='whoami', *args, **kwargs) -> (bool, dict):
+    def light_up(self, dip, dport, force_ssl=None, delay=2, timeout=5, cmd='whoami', *args, **kwargs) -> (bool, dict):
         # 对端响应数据需要一段时间，使用 delay 来控制，如果不成功，可以加到 3s 左右，超过这个基本都是打了补丁的
         # t3 handshake
         dport = int(dport)

