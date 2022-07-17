@@ -6,11 +6,13 @@
 # 不会 java，该漏洞的分析也没人发，对该 POC 还不是很理解
 
 import socket
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
-from stars import universe, Star, target_type
+from stars import target_type, Star
 
 
-@universe.groups()
+# @universe.groups()
 class CVE_2020_2551(Star):
     info = {
         'NAME': '',
@@ -30,7 +32,23 @@ class CVE_2020_2551(Star):
             return False, {'msg': 'connection timeout.'}
         except ConnectionRefusedError:
             return False, {'msg': 'connection refuse.'}
-        sock.send(bytes.fromhex('47494f50010200030000001700000002000000000000000b4e616d6553657276696365'))
+        sock.send(bytes.fromhex(
+            '47494f50010200030000001700000002000000000000000b4e616d6553657276696365'))
         res = sock.recv(1024)
 
         return b'GIOP' in res, {'msg': 'finish.'}
+
+
+def run(queue: SyncManager.Queue, data: Dict):
+    obj = CVE_2020_2551()
+    result = {
+        'IP': data['IP'],
+        'PORT': data['PORT'],
+        'NAME': obj.info['CVE'] if obj.info['CVE'] else obj.info['NAME'],
+        'MSG': '',
+        'STATE': False
+    }
+    result['STATE'], result['MSG'] = obj.light_and_msg(
+        data['IP'], data['PORT'], data['IS_SSL'])
+
+    queue.put(result)

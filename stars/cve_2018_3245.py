@@ -8,11 +8,13 @@
 import socket
 import struct
 import time
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
-from stars import universe, Star, target_type
+from stars import target_type, Star
 
 
-@universe.groups()
+# @universe.groups()
 class CVE_2018_3245(Star):
     info = {
         'NAME': '',
@@ -51,3 +53,18 @@ class CVE_2018_3245(Star):
             return res != b'', {'msg': 'finish.'}
         except socket.timeout:
             return False, {'msg': 'connection timeout.'}
+
+
+def run(queue: SyncManager.Queue, data: Dict):
+    obj = CVE_2018_3245()
+    result = {
+        'IP': data['IP'],
+        'PORT': data['PORT'],
+        'NAME': obj.info['CVE'] if obj.info['CVE'] else obj.info['NAME'],
+        'MSG': '',
+        'STATE': False
+    }
+    result['STATE'], result['MSG'] = obj.light_and_msg(
+        data['IP'], data['PORT'], data['IS_SSL'])
+
+    queue.put(result)

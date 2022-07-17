@@ -5,14 +5,17 @@
 # by 0xn0ne
 
 import sys
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
-from stars import Star, universe, target_type
 from utils import http
+
+from stars import target_type, Star
 
 headers = {'User-Agent': 'TestUA/1.0'}
 
 
-@universe.groups()
+# @universe.groups()
 class WeblogicConsole(Star):
     info = {
         'NAME': 'Weblogic Console',
@@ -22,18 +25,23 @@ class WeblogicConsole(Star):
     type = target_type.MODULE
 
     def light_up(self, dip, dport, force_ssl=None, path='console', *args, **kwargs) -> (bool, dict):
-        r, data = http('http://{}:{}/{}/login/LoginForm.jsp'.format(dip, dport, path), ssl=force_ssl)
+        r, data = http(
+            'http://{}:{}/{}/login/LoginForm.jsp'.format(dip, dport, path), ssl=force_ssl)
         if r and r.status_code == 200:
             return True, {'url': r.url}
         return False, {}
 
 
-# def run(dip, dport):
-#     res, url = islive(dip, dport)
-#     if res:
-#         print('[+] Found a module with Weblogic Console at {}:{}!'.format(dip, dport))
-#         print('[+] Path is: {}'.format(url))
-#         print('[+] Please try weak password blasting!')
-#     else:
-#         print('[-] Target {}:{} does not detect Weblogic Console vulnerability!'.format(dip, dport))
+def run(queue: SyncManager.Queue, data: Dict):
+    obj = WeblogicConsole()
+    result = {
+        'IP': data['IP'],
+        'PORT': data['PORT'],
+        'NAME': obj.info['CVE'] if obj.info['CVE'] else obj.info['NAME'],
+        'MSG': '',
+        'STATE': False
+    }
+    result['STATE'], result['MSG'] = obj.light_and_msg(
+        data['IP'], data['PORT'], data['IS_SSL'])
 
+    queue.put(result)

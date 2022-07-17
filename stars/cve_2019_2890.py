@@ -7,11 +7,13 @@
 import re
 import socket
 import time
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
-from stars import universe, Star, target_type
+from stars import target_type, Star
 
 
-@universe.groups()
+# @universe.groups()
 class CVE_2019_2890(Star):
     info = {
         'NAME': '',
@@ -32,7 +34,8 @@ class CVE_2019_2890(Star):
             return False, {'msg': 'connection timeout.'}
         except ConnectionRefusedError:
             return False, {'msg': 'connection refuse.'}
-        sock.send(bytes.fromhex('74332031322e322e310a41533a3235350a484c3a31390a4d533a31303030303030300a0a'))
+        sock.send(bytes.fromhex(
+            '74332031322e322e310a41533a3235350a484c3a31390a4d533a31303030303030300a0a'))
         time.sleep(delay)
         sock.recv(1024)
 
@@ -60,3 +63,18 @@ class CVE_2019_2890(Star):
             return not r is None, {'msg': 'finish.'}
         except socket.timeout:
             return False, {'msg': 'connection timeout.'}
+
+
+def run(queue: SyncManager.Queue, data: Dict):
+    obj = CVE_2019_2890()
+    result = {
+        'IP': data['IP'],
+        'PORT': data['PORT'],
+        'NAME': obj.info['CVE'] if obj.info['CVE'] else obj.info['NAME'],
+        'MSG': '',
+        'STATE': False
+    }
+    result['STATE'], result['MSG'] = obj.light_and_msg(
+        data['IP'], data['PORT'], data['IS_SSL'])
+
+    queue.put(result)

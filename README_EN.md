@@ -30,6 +30,7 @@ Currently detectable vulnerabilitys are (some non-principles detection, manual v
 + CVE-2019-2729
 + CVE-2019-2890
 + CVE-2020-2551
++ CVE-2020-14750
 + CVE-2020-14882
 + CVE-2020-14883
 

@@ -1,10 +1,11 @@
-import traceback
-from typing import List, Mapping, Any, Dict, Tuple, Union
 import logging
+import traceback
+from multiprocessing.managers import SyncManager
+from typing import Any, Dict, List, Mapping, Tuple, Union
 
-from logger import APPNAME
-from state import BaseState
+from utils.state import BaseState
 from utils import http
+from utils.logger import APPNAME
 
 logger = logging.getLogger(APPNAME)
 
@@ -60,22 +61,26 @@ class Star:
                 self.msg_group[code].append('[*][{call}][{target}] Start...')
             if code == result_code.NOTEXISTS:
                 if self.type == target_type.VULNERABILITY:
-                    self.msg_group[code].append('[-][{call}][{target}] Not vulnerability.')
+                    self.msg_group[code].append(
+                        '[-][{call}][{target}] Not vulnerability.')
                 elif self.type == target_type.MODULE:
-                    self.msg_group[code].append('[-][{call}][{target}] Not found.')
+                    self.msg_group[code].append(
+                        '[-][{call}][{target}] Not found.')
             if code == result_code.EXISTS:
                 if self.type == target_type.VULNERABILITY:
-                    self.msg_group[code].append('[+][{call}][{target}] Exists vulnerability!')
+                    self.msg_group[code].append(
+                        '[+][{call}][{target}] Exists vulnerability!')
                 elif self.type == target_type.MODULE:
-                    self.msg_group[code].append('[+][{call}][{target}] Found module!')
-                    self.msg_group[code].append('[*][{call}][{target}] Please verify manually!')
+                    self.msg_group[code].append(
+                        '[+][{call}][{target}] Found module, Please verify manually!')
             if code == result_code.TIMEOUT:
                 self.msg_group[code].append('[!][{call}][{target}] Timeout.')
             if code == result_code.ERROR:
-                self.msg_group[code].append('[!][{call}][{target}] Connection error.')
+                self.msg_group[code].append(
+                    '[!][{call}][{target}] Connection error.')
 
     def light_and_msg(self, dip, dport, force_ssl=None, *arg, **kwargs):
-        self.print_msg(f'{dip}:{dport}', result_code.START)
+        # self.print_msg(f'{dip}:{dport}', result_code.START)
         res = False
         data = {}
         try:
@@ -84,12 +89,23 @@ class Star:
             # ConnectionResetError: 当 socket 连接被重置触发，常见于反序列化的场景
             # ConnectionAbortedError: 当 socket 连接被强制中断触发，常见于存在防火墙的场景
             self.print_msg(f'{dip}:{dport}', result_code.ERROR, {
-                'more_detail': ['''The following information output is only used for error tracking, so don't panic''',
-                                '以下信息输出仅为错误追踪使用，请勿担心', traceback.format_exc()]}, level=logging.DEBUG)
+                'more_detail': ['''The following information output is only used for error tracking, so don't panic''', '以下信息输出仅为错误追踪使用，请勿担心', traceback.format_exc()]}, level=logging.DEBUG)
         if res:
             self.print_msg(f'{dip}:{dport}', result_code.EXISTS)
         else:
             self.print_msg(f'{dip}:{dport}', result_code.NOTEXISTS)
+
+        # result = {
+        #     'APPNAME': APPNAME,
+        #     'IP': dip,
+        #     'PORT': dport,
+        #     'NAME': self.info['CVE'] if self.info['CVE'] else self.info['NAME'],
+        #     'MSG': '',
+        #     'STATE': False
+        # }
+        # result['STATE'] = res
+        # result['MSG'] = data['msg']
+        # queue.put(result)
         return res, data
 
     def light_up(self, dip, dport, force_ssl=None, *arg, **kwargs) -> Tuple[Union[bool, None], dict]:
@@ -116,7 +132,8 @@ class Star:
         if not data:
             data = {}
         data['target'] = target
-        data['call'] = self.get_info("CVE") if self.get_info("CVE") else self.get_info("NAME")
+        data['call'] = self.get_info("CVE") if self.get_info(
+            "CVE") else self.get_info("NAME")
 
         for msg in self.msg_group[code]:
             logger.info(msg.format(**data))
@@ -132,21 +149,21 @@ class Star:
         return http(url, method, *arg, **kwargs)
 
 
-class Universe:
-    actived: Dict[str, List[Star]] = {}
+# class Universe:
+#     actived: Dict[str, List[Star]] = {}
 
-    def groups(self, gname=''):
-        def decorator(cls: Star):
-            nonlocal gname
-            if not gname:
-                gname = 'default'
-            if gname not in self.actived:
-                self.actived[gname] = []
-            # instance = cls
-            # if instance
-            self.actived[gname].append(cls)
+#     def groups(self, gname=''):
+#         def decorator(cls: Star):
+#             nonlocal gname
+#             if not gname:
+#                 gname = 'default'
+#             if gname not in self.actived:
+#                 self.actived[gname] = []
+#             # instance = cls
+#             # if instance
+#             self.actived[gname].append(cls)
 
-        return decorator
+#         return decorator
 
 
-universe = Universe()
+# universe = Universe()

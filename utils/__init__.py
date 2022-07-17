@@ -46,9 +46,11 @@ class Url:
             if not self.path:
                 self.path = '/'
             if user_pass:
-                self.username, self.password = re.search(r'([^@:]+):([^@:]+)', user_pass).groups()
+                self.username, self.password = re.search(
+                    r'([^@:]+):([^@:]+)', user_pass).groups()
 
-            self.hostname, self.port = re.search(r'([^:]+):?(\d+)?', self.netloc).groups()
+            self.hostname, self.port = re.search(
+                r'([^:]+):?(\d+)?', self.netloc).groups()
             if not self.port:
                 self.port = self.get_default_port(self.scheme)
         except AttributeError:
