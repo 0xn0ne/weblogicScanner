@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--targets', required=True, nargs='+',
                         help='target, or targets file(default port 7001). eg. 127.0.0.1:7001')
     parser.add_argument('-v', '--vulnerability', nargs='+',
-                        help='vulnerability name. eg. "weblogic administrator console"')
+                        help='vulnerability name. eg. "CVE-2020-14750 cve_2014_4210 console"')
     parser.add_argument('-p', '--process_number', default=8,
                         type=int, help='Number of program processes(default number 8).')
     parser.add_argument('-o', '--output', required=False, type=str,
@@ -35,11 +35,14 @@ if __name__ == '__main__':
     if not args.ssl:
         args.ssl = None
 
-    vulnerability_list = []
+    # vulnerability_list = []
+    # if args.vulnerability:
+    #     for item in args.vulnerability:
+    #         vulnerability_list.append(item.lower())
+    vulnerability_list = set()
     if args.vulnerability:
         for item in args.vulnerability:
-            item: str
-            vulnerability_list.append(item.lower())
+            vulnerability_list.add(item.lower().replace('-', '_'))
 
     m_target = {}
     for target in args.targets:
@@ -69,6 +72,9 @@ if __name__ == '__main__':
         try:
             module = importlib.import_module('.{}'.format(script_name),
                                              'stars')
+            if vulnerability_list:
+                if script_name not in vulnerability_list:
+                    continue
             if 'run' not in module.__dir__():
                 continue
             for key in m_target:
